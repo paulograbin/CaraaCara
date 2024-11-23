@@ -541,66 +541,68 @@ public class ServidorCC extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void trocaFotoEmma(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trocaFotoEmma
-        fichas[0].setEstado();
-        if (fichas[0].getEstado()) {
+    private void trocaFotoEmma(java.awt.event.MouseEvent evt) {
+        fichas[0].toggleVisivel();
+        if (fichas[0].getVisivel()) {
             jLabel2.setIcon(fotoEmma);
 //            levantaServidor();
         } else {
             jLabel2.setIcon(fotoEu);
 //            abaixaServidor();
         }
-    }//GEN-LAST:event_trocaFotoEmma
+    }
 
-    private void trocaFotoObama(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trocaFotoObama
-        fichas[1].setEstado();
-        if (fichas[1].getEstado()) {
+    private void trocaFotoObama(java.awt.event.MouseEvent evt) {
+        fichas[1].toggleVisivel();
+        if (fichas[1].getVisivel()) {
             jLabel3.setIcon(fotoEmilia);
 //           levantaServidor();
         } else {
             jLabel3.setIcon(fotoEu);
 //            abaixaServidor();
         }
-    }//GEN-LAST:event_trocaFotoObama
+    }
 
-    private void trocaFotoNatalie(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trocaFotoNatalie
-        fichas[2].setEstado();
-        if (fichas[2].getEstado()) {
+    private void trocaFotoNatalie(java.awt.event.MouseEvent evt) {
+        fichas[2].toggleVisivel();
+        if (fichas[2].getVisivel()) {
             jLabel4.setIcon(fotoNatalie);
 //            levantaServidor();
         } else {
             jLabel4.setIcon(fotoEu);
 //            abaixaServidor();
         }
-    }//GEN-LAST:event_trocaFotoNatalie
+    }
 
-    private void trocaFotoScarlett(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trocaFotoScarlett
-        fichas[3].setEstado();
-        if (fichas[3].getEstado()) {
+    private void trocaFotoScarlett(java.awt.event.MouseEvent evt) {
+        fichas[3].toggleVisivel();
+        if (fichas[3].getVisivel()) {
             jLabel5.setIcon(fotoScarlett);
 //            levantaServidor();
         } else {
             jLabel5.setIcon(fotoEu);
 //            abaixaServidor();
         }
-    }//GEN-LAST:event_trocaFotoScarlett
+    }
 
-    private void trocaFotoMila(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trocaFotoMila
-        fichas[4].setEstado();
-        if (fichas[4].getEstado()) {
+    private void trocaFotoMila(java.awt.event.MouseEvent evt) {
+        fichas[4].toggleVisivel();
+        if (fichas[4].getVisivel()) {
             jLabel6.setIcon(fotoMila);
 //            levantaServidor();
         } else {
             jLabel6.setIcon(fotoEu);
 //            abaixaServidor();
         }
-    }//GEN-LAST:event_trocaFotoMila
+    }
 
-    private void handlerClose(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_handlerClose
+    private void handlerClose(java.awt.event.WindowEvent evt) {
         fechaConexao();
-    }//GEN-LAST:event_handlerClose
+    }
 
-    private void handlerBtAbrirConexao(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_handlerBtAbrirConexao
+    private void handlerBtAbrirConexao(java.awt.event.MouseEvent evt) {
+        System.out.println("Handler - Botão abrir conexão");
+
         try {
             this.esperaConexao();
         } catch (IOException ex) {
@@ -610,12 +612,7 @@ public class ServidorCC extends javax.swing.JFrame {
 
     }
 
-    private void handlerBtRecebeMensagens(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_handlerBtRecebeMensagens
-        continua = true;
-        recebeMensagens();
-    }//GEN-LAST:event_handlerBtRecebeMensagens
-
-    private void handlerBtEnviar(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_handlerBtEnviar
+    private void handlerBtEnviar(java.awt.event.MouseEvent evt) {
         String mensagemAEnviar = jTextField1.getText();
 
         if (mensagemAEnviar.trim().equalsIgnoreCase("")) {
@@ -626,15 +623,15 @@ public class ServidorCC extends javax.swing.JFrame {
         }
 
 
-    }//GEN-LAST:event_handlerBtEnviar
+    }
 
-    private void handlerBtPalpite(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_handlerBtPalpite
+    private void handlerBtPalpite(java.awt.event.MouseEvent evt) {
         recebeEnviaPalpite();
-    }//GEN-LAST:event_handlerBtPalpite
+    }
 
-    private void limpa(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_limpa
+    private void limpa(java.awt.event.MouseEvent evt) {
         mandaMensagem(montaMensagem(ENCERRALAÇO, null));
-    }//GEN-LAST:event_limpa
+    }
 
     public static void main(String[] args) {
         /*
@@ -654,12 +651,6 @@ public class ServidorCC extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ServidorCC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ServidorCC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ServidorCC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(ServidorCC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
