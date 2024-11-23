@@ -148,6 +148,7 @@ public class Initial extends javax.swing.JFrame {
                         "Pergunte por exemplo: “Tem olhos azuis?” Se a resposta for “não”, abaixe todas as molduras com caras que tiverem olhos azuis, para eliminá-las da partida. Se a resposta for “sim”, abaixe todas as caras que não tiverem olhos azuis. Depois, é a vez de seu adversário fazer uma pergunta e assim por diante. " + '\n' +
                         "4. Se você acha que sabe de quem é a cara do seu adversário, pode tentar adivinhar a qualquer momento. Se você adivinhar errado, perderá a partida. Se você adivinhar corretamente, então você ganha a partida." + '\n';
                 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
         JOptionPane.showMessageDialog(null, regras);
     }//GEN-LAST:event_jButton3ActionPerformed
     
