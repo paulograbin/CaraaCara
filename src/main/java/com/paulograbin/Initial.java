@@ -12,7 +12,7 @@ public class Initial extends javax.swing.JFrame {
         initComponents();
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         System.out.println("Starting with " + args.length + " arguments");
 
         for (String arg : args) {
@@ -65,7 +65,7 @@ public class Initial extends javax.swing.JFrame {
 
         labelEntrada.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/entrada.png"))); // NOI18N
 
-        buttonRegras.addActionListener(evt -> jButton3ActionPerformed(evt));
+        buttonRegras.addActionListener(this::jButton3ActionPerformed);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -129,10 +129,10 @@ public class Initial extends javax.swing.JFrame {
                 3. Faça perguntas para ir descobrindo as características do personagem que você tem que adivinhar.
                               IMPORTANTE: cada um dos jogadores faz só uma pergunta de cada vez. Na hora de responder, cuidado para não falar demais! Diga só sim ou não.
                 
-                Pergunte por exemplo: “Tem olhos azuis?” Se a resposta for “não”, abaixe todas as molduras com caras que tiverem olhos azuis, para eliminá-las da partida. 
-                Se a resposta for “sim”, abaixe todas as caras que não tiverem olhos azuis. Depois, é a vez de seu adversário fazer uma pergunta e assim por diante. 
+                Pergunte por exemplo: “Tem olhos azuis?” Se a resposta for “não”, abaixe todas as molduras com caras que tiverem olhos azuis, para eliminá-las da partida.
+                Se a resposta for “sim”, abaixe todas as caras que não tiverem olhos azuis. Depois, é a vez de seu adversário fazer uma pergunta e assim por diante.
                 
-                4. Se você acha que sabe de quem é a cara do seu adversário, pode tentar adivinhar a qualquer momento. 
+                4. Se você acha que sabe de quem é a cara do seu adversário, pode tentar adivinhar a qualquer momento.
                 Se você adivinhar errado, perderá a partida. Se você adivinhar corretamente, então você ganha a partida.
                 """;
 
