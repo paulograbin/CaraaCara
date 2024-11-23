@@ -29,13 +29,13 @@ public class ServidorCC extends javax.swing.JFrame {
     public final int CLIENTVENCEU = 11;
 
 
-    public final ImageIcon fotoEmma = new ImageIcon(getClass().getResource(Assets.RESOURCE_EMMA_WATSON));
-    public final ImageIcon fotoObama = new javax.swing.ImageIcon(getClass().getResource(Assets.RESOURCE_OBAMA));
-    public final ImageIcon fotoEmilia = new ImageIcon(getClass().getResource(Assets.RESOURCE_EMILIA));
-    public final ImageIcon fotoNatalie = new ImageIcon(getClass().getResource(Assets.RESOURCE_NATALIE));
-    public final ImageIcon fotoMila = new ImageIcon(getClass().getResource(Assets.RESOURCE_MILA));
-    public final ImageIcon fotoScarlett = new ImageIcon(getClass().getResource(Assets.RESOURCE_SCARLETT));
-    public final ImageIcon fotoEu = new ImageIcon(getClass().getResource(Assets.RESOURCE_EU));
+    public final ImageIcon fotoEmma = new ImageIcon(Objects.requireNonNull(getClass().getResource(Assets.RESOURCE_EMMA_WATSON)));
+    public final ImageIcon fotoObama = new javax.swing.ImageIcon(Objects.requireNonNull(getClass().getResource(Assets.RESOURCE_OBAMA)));
+    public final ImageIcon fotoEmilia = new ImageIcon(Objects.requireNonNull(getClass().getResource(Assets.RESOURCE_EMILIA)));
+    public final ImageIcon fotoNatalie = new ImageIcon(Objects.requireNonNull(getClass().getResource(Assets.RESOURCE_NATALIE)));
+    public final ImageIcon fotoMila = new ImageIcon(Objects.requireNonNull(getClass().getResource(Assets.RESOURCE_MILA)));
+    public final ImageIcon fotoScarlett = new ImageIcon(Objects.requireNonNull(getClass().getResource(Assets.RESOURCE_SCARLETT)));
+    public final ImageIcon fotoEu = new ImageIcon(Objects.requireNonNull(getClass().getResource(Assets.RESOURCE_EU)));
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btAbrir;
