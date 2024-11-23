@@ -139,16 +139,24 @@ public class Initial extends javax.swing.JFrame {
         else {
             JOptionPane.showMessageDialog(null, "Programa já em execução." + '\n' + "Feche e inicie o programa novamente.");
         }
-    }//GEN-LAST:event_handlerConectar
+    }
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        String regras = "1. Um jogador deve abrir o servidor e informar o IP ao outro, para que este conecte. " + '\n' +
-                        "2. O personagem que deve ser adivinhado é selecionado automaticamente para ambos os jogadores. Ele é secreto, não revele ao seu adversario." + '\n' +
-                        "3. Faça perguntas para ir descobrindo as características do personagem que você tem que adivinhar. " + '\n' + "              " + "IMPORTANTE: cada um dos jogadores faz só uma pergunta de cada vez. Na hora de responder, cuidado para não falar demais! Diga só sim ou não." + '\n' +
-                        "Pergunte por exemplo: “Tem olhos azuis?” Se a resposta for “não”, abaixe todas as molduras com caras que tiverem olhos azuis, para eliminá-las da partida. Se a resposta for “sim”, abaixe todas as caras que não tiverem olhos azuis. Depois, é a vez de seu adversário fazer uma pergunta e assim por diante. " + '\n' +
-                        "4. Se você acha que sabe de quem é a cara do seu adversário, pode tentar adivinhar a qualquer momento. Se você adivinhar errado, perderá a partida. Se você adivinhar corretamente, então você ganha a partida." + '\n';
-                
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
+        String regras = """
+                1. Um jogador deve abrir o servidor e informar o IP ao outro, para que este conecte.
+                
+                2. O personagem que deve ser adivinhado é selecionado automaticamente para ambos os jogadores. Ele é secreto, não revele ao seu adversario.
+                
+                3. Faça perguntas para ir descobrindo as características do personagem que você tem que adivinhar.
+                              IMPORTANTE: cada um dos jogadores faz só uma pergunta de cada vez. Na hora de responder, cuidado para não falar demais! Diga só sim ou não.
+                
+                Pergunte por exemplo: “Tem olhos azuis?” Se a resposta for “não”, abaixe todas as molduras com caras que tiverem olhos azuis, para eliminá-las da partida. 
+                Se a resposta for “sim”, abaixe todas as caras que não tiverem olhos azuis. Depois, é a vez de seu adversário fazer uma pergunta e assim por diante. 
+                
+                4. Se você acha que sabe de quem é a cara do seu adversário, pode tentar adivinhar a qualquer momento. 
+                Se você adivinhar errado, perderá a partida. Se você adivinhar corretamente, então você ganha a partida.
+                """;
+
         JOptionPane.showMessageDialog(null, regras);
     }//GEN-LAST:event_jButton3ActionPerformed
     
