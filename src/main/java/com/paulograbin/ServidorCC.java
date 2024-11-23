@@ -110,7 +110,7 @@ public class ServidorCC extends javax.swing.JFrame {
         }
     }
 
-    private void iniciaPersonagens() throws IOException {
+    private void iniciaPersonagens() {
         fichas[0] = new Personagem(fotoEmma, Assets.Names.EMMA_WATSON);
         fichas[1] = new Personagem(fotoEmilia, Assets.Names.EMILIA_CLARKE);
         fichas[2] = new Personagem(fotoNatalie, Assets.Names.NATALIE);
@@ -200,7 +200,7 @@ public class ServidorCC extends javax.swing.JFrame {
         }
     }
 
-    public void sincronizaChat() throws IOException {
+    public void sincronizaChat() {
         mandaMensagem(montaMensagem(SINCRONIZA, jTextArea1.getText()));
     }
 
@@ -211,11 +211,7 @@ public class ServidorCC extends javax.swing.JFrame {
 
         jTextArea1.setText(textoSalvo);
 
-        try {
-            sincronizaChat();
-        } catch (IOException e) {
-            System.err.println("Não conseguiu sincronizar o chat.");
-        }
+        sincronizaChat();
     }
 
     public void adicionaMensagemClientChat(String mensagem) {
@@ -224,11 +220,7 @@ public class ServidorCC extends javax.swing.JFrame {
 
         jTextArea1.setText(textoSalvo);
 
-        try {
-            sincronizaChat();
-        } catch (IOException e) {
-            System.err.println("Não conseguiu sincronizar a porra do chat");
-        }
+        sincronizaChat();
     }
 
     public void adicionaMensagemConsole(String mensagem) {
