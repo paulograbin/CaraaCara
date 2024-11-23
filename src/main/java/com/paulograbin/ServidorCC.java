@@ -95,6 +95,15 @@ public class ServidorCC extends javax.swing.JFrame {
 
             esperaConexao();
 
+
+            new Thread(() -> {
+                while (true) {
+                    if (input != null) {
+                        recebeMensagens();
+                    }
+                }
+            }).start();
+
         } catch (UnknownHostException ex) {
             System.err.println("Server: merda no construtor 1");
             System.exit(1);

@@ -35,7 +35,7 @@ public class ClienteCC extends javax.swing.JFrame {
     public final ImageIcon fotoEu = new ImageIcon(getClass().getResource(Assets.RESOURCE_EU));
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -52,7 +52,7 @@ public class ClienteCC extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration
 
 
     public String nomeJogadorServer;
@@ -94,6 +94,13 @@ public class ClienteCC extends javax.swing.JFrame {
 //        labelQntClient.setText(String.valueOf(quantidadeClient));
 
         conecta();
+        new Thread(() -> {
+            while (true) {
+                if (input != null) {
+                    recebeMensagem();
+                }
+            }
+        }).start();
     }
 
     private void iniciaPersonagens() {
@@ -152,17 +159,9 @@ public class ClienteCC extends javax.swing.JFrame {
         }
     }
 
-    public void recebeMensagens() {
-
-        System.out.println("RECEBENDO MENSAGENS........................");
-
-        while (continua == true) {
-            recebeMensagem();
-        }
-        System.out.println("Encerrando laço...");
-    }
-
     public void recebeMensagem() {
+        System.out.println("Recebendo mensagens...");
+
         try {
             String mensagem = (String) input.readObject();
 
