@@ -84,7 +84,8 @@ public class ClienteCC extends javax.swing.JFrame {
 //        quantidadeClient = 5;
 
         //ip = "10.250.5.116";
-        ip = JOptionPane.showInputDialog("Informe o IP...");
+//        ip = JOptionPane.showInputDialog("Informe o IP...");
+        ip = "192.168.1.101";
         porta = 1111;
 
         jTextArea1.setText("Bem vindo...");
