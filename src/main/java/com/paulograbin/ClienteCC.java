@@ -75,11 +75,11 @@ public class ClienteCC extends javax.swing.JFrame {
     }
 
     private void iniciaPersonagens() {
-        fichas[0] = new Personagem(fotoEmma, "Emma Watson");
-        fichas[1] = new Personagem(fotoEmilia, "Emilia Clarke");
-        fichas[2] = new Personagem(fotoNatalie, "Natalie Portman");
-        fichas[3] = new Personagem(fotoScarlett, "Scarlett Johansson");
-        fichas[4] = new Personagem(fotoMila, "Mila Kunis");
+        fichas[0] = new Personagem(fotoEmma, Assets.Names.EMMA_WATSON);
+        fichas[1] = new Personagem(fotoEmilia, Assets.Names.EMILIA_CLARKE);
+        fichas[2] = new Personagem(fotoNatalie, Assets.Names.NATALIE);
+        fichas[3] = new Personagem(fotoScarlett, Assets.Names.SCARLETT);
+        fichas[4] = new Personagem(fotoMila, Assets.Names.MILA);
         jLabel2.setIcon(fichas[0].getFoto());
         jLabel3.setIcon(fichas[1].getFoto());
         jLabel4.setIcon(fichas[2].getFoto());
