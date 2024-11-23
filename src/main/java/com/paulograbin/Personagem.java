@@ -1,15 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.paulograbin;
 
 import javax.swing.ImageIcon;
 
-/**
- *
- * @author pgrabin
- */
 public class Personagem {
     private ImageIcon foto;
     private String nome;

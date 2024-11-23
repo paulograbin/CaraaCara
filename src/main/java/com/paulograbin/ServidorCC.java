@@ -29,13 +29,13 @@ public class ServidorCC extends javax.swing.JFrame {
     public final int CLIENTVENCEU = 11;
     
 
-    public final ImageIcon fotoEmma = new ImageIcon(getClass().getResource("/images/emma_watson.jpg"));
-//    public final ImageIcon fotoObama = new javax.swing.ImageIcon(getClass().getResource("/images/obama.jpg"));
-    public final ImageIcon fotoEmilia = new ImageIcon(getClass().getResource("/images/emilia.jpg"));
-    public final ImageIcon fotoNatalie = new ImageIcon(getClass().getResource("/images/natalie.jpg"));
-    public final ImageIcon fotoMila = new ImageIcon(getClass().getResource("/images/mila.jpg"));
-    public final ImageIcon fotoScarlett = new ImageIcon(getClass().getResource("/images/scarlett.jpg"));
-    public final ImageIcon fotoEu = new ImageIcon(getClass().getResource("/images/eu.jpg"));
+    public final ImageIcon fotoEmma = new ImageIcon(Assets.RESOURCE_EMMA_WATSON);
+    public final ImageIcon fotoObama = new javax.swing.ImageIcon(Assets.RESOURCE_OBAMA);
+    public final ImageIcon fotoEmilia = new ImageIcon(Assets.RESOURCE_EMILIA);
+    public final ImageIcon fotoNatalie = new ImageIcon(Assets.RESOURCE_NATALIE);
+    public final ImageIcon fotoMila = new ImageIcon(Assets.RESOURCE_MILA);
+    public final ImageIcon fotoScarlett = new ImageIcon(Assets.RESOURCE_SCARLETT);
+    public final ImageIcon fotoEu = new ImageIcon(Assets.RESOURCE_EU);
     
     public String nomeJogadorServer;
     public String nomeJogadorClient;
@@ -54,7 +54,7 @@ public class ServidorCC extends javax.swing.JFrame {
     private ObjectOutputStream output;
     
     private boolean continua;
-    private boolean debugMode = false;
+    private boolean debugMode = true;
     
     public ServidorCC() {
         try {
