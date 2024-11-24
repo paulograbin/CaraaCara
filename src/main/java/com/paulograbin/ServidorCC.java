@@ -7,9 +7,10 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
+import java.util.Objects;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.UnsupportedLookAndFeelException;
 
 
 public class ServidorCC extends javax.swing.JFrame {
@@ -38,17 +39,16 @@ public class ServidorCC extends javax.swing.JFrame {
     public final ImageIcon fotoEu = new ImageIcon(Objects.requireNonNull(getClass().getResource(Assets.RESOURCE_EU)));
 
     // Variables declaration - do not modify
-    private javax.swing.JButton btAbrir;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel labelPersonagemUm;
+    private javax.swing.JLabel labelPersonagemDois;
+    private javax.swing.JLabel labelPersonagemTres;
+    private javax.swing.JLabel labelPersonagemQuatro;
+    private javax.swing.JLabel labelPersonagemCinco;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -61,12 +61,11 @@ public class ServidorCC extends javax.swing.JFrame {
     public String nomeJogadorServer;
     public String nomeJogadorClient;
 
-    private Personagem fichas[] = new Personagem[5];
+    private final Personagem[] fichas = new Personagem[5];
 
     public String escolhidoServer;
     public String escolhidoClient;
 
-    private String ip;
     private int porta;
 
     private ServerSocket socketRecepcao;
@@ -75,7 +74,7 @@ public class ServidorCC extends javax.swing.JFrame {
     private ObjectOutputStream output;
 
     private boolean continua;
-    private boolean debugMode = true;
+    private final boolean debugMode = false;
 
     public ServidorCC() {
         try {
@@ -84,9 +83,6 @@ public class ServidorCC extends javax.swing.JFrame {
 
             continua = true;
 
-            ip = String.valueOf(InetAddress.getLocalHost());
-            String s[] = ip.split("/");
-            ip = s[1];
             porta = 1111;
 
             jTextArea1.setText("Bem vindo...");
@@ -99,7 +95,7 @@ public class ServidorCC extends javax.swing.JFrame {
             new Thread(() -> {
                 while (true) {
                     if (input != null) {
-                        recebeMensagens();
+                        recebeMensagem();
                     }
                 }
             }).start();
@@ -116,11 +112,11 @@ public class ServidorCC extends javax.swing.JFrame {
         fichas[2] = new Personagem(fotoNatalie, Assets.Names.NATALIE);
         fichas[3] = new Personagem(fotoScarlett, Assets.Names.SCARLETT);
         fichas[4] = new Personagem(fotoMila, Assets.Names.MILA);
-        jLabel2.setIcon(fichas[0].getFoto());
-        jLabel3.setIcon(fichas[1].getFoto());
-        jLabel4.setIcon(fichas[2].getFoto());
-        jLabel5.setIcon(fichas[3].getFoto());
-        jLabel6.setIcon(fichas[4].getFoto());
+        labelPersonagemUm.setIcon(fichas[0].getFoto());
+        labelPersonagemDois.setIcon(fichas[1].getFoto());
+        labelPersonagemTres.setIcon(fichas[2].getFoto());
+        labelPersonagemQuatro.setIcon(fichas[3].getFoto());
+        labelPersonagemCinco.setIcon(fichas[4].getFoto());
 
         int numero = (int) (Math.random() * 5);
         escolhidoServer = fichas[numero].getNome();
@@ -129,7 +125,8 @@ public class ServidorCC extends javax.swing.JFrame {
     }
 
     public void esperaConexao() throws IOException {
-        adicionaMensagemConsole("Esperando conexão no endereço " + ip + " porta " + porta);
+        System.out.println("Esperando conexão...");
+
 
         JOptionPane.showMessageDialog(null, "Esperando conexão no IP " + ip);
 
@@ -296,11 +293,11 @@ public class ServidorCC extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
         jPanel1 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        labelPersonagemUm = new javax.swing.JLabel();
+        labelPersonagemDois = new javax.swing.JLabel();
+        labelPersonagemTres = new javax.swing.JLabel();
+        labelPersonagemQuatro = new javax.swing.JLabel();
+        labelPersonagemCinco = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
@@ -309,7 +306,6 @@ public class ServidorCC extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        btAbrir = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
 
@@ -324,49 +320,49 @@ public class ServidorCC extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jLabel2.setBackground(new java.awt.Color(153, 153, 153));
-        jLabel2.setToolTipText("Emma Watson");
-        jLabel2.setPreferredSize(new java.awt.Dimension(175, 250));
-        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+        labelPersonagemUm.setBackground(new java.awt.Color(153, 153, 153));
+        labelPersonagemUm.setToolTipText("Emma Watson");
+        labelPersonagemUm.setPreferredSize(new java.awt.Dimension(175, 250));
+        labelPersonagemUm.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 trocaFotoEmma(evt);
             }
         });
 
-        jLabel3.setBackground(new java.awt.Color(51, 51, 51));
-        jLabel3.setToolTipText("Emilia Clarke");
-        jLabel3.setPreferredSize(new java.awt.Dimension(175, 250));
-        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+        labelPersonagemDois.setBackground(new java.awt.Color(51, 51, 51));
+        labelPersonagemDois.setToolTipText("Emilia Clarke");
+        labelPersonagemDois.setPreferredSize(new java.awt.Dimension(175, 250));
+        labelPersonagemDois.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 trocaFotoObama(evt);
             }
         });
 
-        jLabel4.setBackground(new java.awt.Color(0, 255, 102));
-        jLabel4.setForeground(new java.awt.Color(51, 204, 0));
-        jLabel4.setToolTipText("Natalie Portman");
-        jLabel4.setPreferredSize(new java.awt.Dimension(175, 250));
-        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
+        labelPersonagemTres.setBackground(new java.awt.Color(0, 255, 102));
+        labelPersonagemTres.setForeground(new java.awt.Color(51, 204, 0));
+        labelPersonagemTres.setToolTipText("Natalie Portman");
+        labelPersonagemTres.setPreferredSize(new java.awt.Dimension(175, 250));
+        labelPersonagemTres.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 trocaFotoNatalie(evt);
             }
         });
 
-        jLabel5.setBackground(new java.awt.Color(0, 255, 102));
-        jLabel5.setForeground(new java.awt.Color(51, 204, 0));
-        jLabel5.setToolTipText("Scarlett Johansson");
-        jLabel5.setPreferredSize(new java.awt.Dimension(175, 250));
-        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
+        labelPersonagemQuatro.setBackground(new java.awt.Color(0, 255, 102));
+        labelPersonagemQuatro.setForeground(new java.awt.Color(51, 204, 0));
+        labelPersonagemQuatro.setToolTipText("Scarlett Johansson");
+        labelPersonagemQuatro.setPreferredSize(new java.awt.Dimension(175, 250));
+        labelPersonagemQuatro.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 trocaFotoScarlett(evt);
             }
         });
 
-        jLabel6.setBackground(new java.awt.Color(0, 255, 102));
-        jLabel6.setForeground(new java.awt.Color(51, 204, 0));
-        jLabel6.setToolTipText("Mila Kunis");
-        jLabel6.setPreferredSize(new java.awt.Dimension(175, 250));
-        jLabel6.addMouseListener(new java.awt.event.MouseAdapter() {
+        labelPersonagemCinco.setBackground(new java.awt.Color(0, 255, 102));
+        labelPersonagemCinco.setForeground(new java.awt.Color(51, 204, 0));
+        labelPersonagemCinco.setToolTipText("Mila Kunis");
+        labelPersonagemCinco.setPreferredSize(new java.awt.Dimension(175, 250));
+        labelPersonagemCinco.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 trocaFotoMila(evt);
             }
@@ -378,26 +374,26 @@ public class ServidorCC extends javax.swing.JFrame {
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(labelPersonagemUm, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(labelPersonagemDois, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(labelPersonagemTres, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(labelPersonagemQuatro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(labelPersonagemCinco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel1Layout.setVerticalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(labelPersonagemCinco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(labelPersonagemQuatro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(labelPersonagemTres, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(labelPersonagemDois, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(labelPersonagemUm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -415,7 +411,7 @@ public class ServidorCC extends javax.swing.JFrame {
             }
         });
 
-        jTextField1.setText("Digite aqui sua mensagem...");
+        jTextField1.setToolTipText("Digite aqui sua mensagem...");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -458,13 +454,6 @@ public class ServidorCC extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel1.setText("jLabel1");
 
-        btAbrir.setText("Abrir conexão");
-        btAbrir.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                handlerBtAbrirConexao(evt);
-            }
-        });
-
         jButton4.setText("Finalizou jogada");
         jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -485,7 +474,7 @@ public class ServidorCC extends javax.swing.JFrame {
                                                 .addComponent(jLabel1)
                                                 .addGap(0, 0, Short.MAX_VALUE))
                                         .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(btAbrir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        )
                                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -494,7 +483,6 @@ public class ServidorCC extends javax.swing.JFrame {
                                 .addContainerGap()
                                 .addComponent(jLabel1)
                                 .addGap(18, 18, 18)
-                                .addComponent(btAbrir)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButton4)
                                 .addGap(5, 5, 5)
@@ -531,15 +519,15 @@ public class ServidorCC extends javax.swing.JFrame {
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
     private void trocaFotoEmma(java.awt.event.MouseEvent evt) {
         fichas[0].toggleVisivel();
         if (fichas[0].getVisivel()) {
-            jLabel2.setIcon(fotoEmma);
+            labelPersonagemUm.setIcon(fotoEmma);
 //            levantaServidor();
         } else {
-            jLabel2.setIcon(fotoEu);
+            labelPersonagemUm.setIcon(fotoEu);
 //            abaixaServidor();
         }
     }
@@ -547,10 +535,10 @@ public class ServidorCC extends javax.swing.JFrame {
     private void trocaFotoObama(java.awt.event.MouseEvent evt) {
         fichas[1].toggleVisivel();
         if (fichas[1].getVisivel()) {
-            jLabel3.setIcon(fotoEmilia);
+            labelPersonagemDois.setIcon(fotoEmilia);
 //           levantaServidor();
         } else {
-            jLabel3.setIcon(fotoEu);
+            labelPersonagemDois.setIcon(fotoEu);
 //            abaixaServidor();
         }
     }
@@ -558,10 +546,10 @@ public class ServidorCC extends javax.swing.JFrame {
     private void trocaFotoNatalie(java.awt.event.MouseEvent evt) {
         fichas[2].toggleVisivel();
         if (fichas[2].getVisivel()) {
-            jLabel4.setIcon(fotoNatalie);
+            labelPersonagemTres.setIcon(fotoNatalie);
 //            levantaServidor();
         } else {
-            jLabel4.setIcon(fotoEu);
+            labelPersonagemTres.setIcon(fotoEu);
 //            abaixaServidor();
         }
     }
@@ -569,10 +557,10 @@ public class ServidorCC extends javax.swing.JFrame {
     private void trocaFotoScarlett(java.awt.event.MouseEvent evt) {
         fichas[3].toggleVisivel();
         if (fichas[3].getVisivel()) {
-            jLabel5.setIcon(fotoScarlett);
+            labelPersonagemQuatro.setIcon(fotoScarlett);
 //            levantaServidor();
         } else {
-            jLabel5.setIcon(fotoEu);
+            labelPersonagemQuatro.setIcon(fotoEu);
 //            abaixaServidor();
         }
     }
@@ -580,10 +568,10 @@ public class ServidorCC extends javax.swing.JFrame {
     private void trocaFotoMila(java.awt.event.MouseEvent evt) {
         fichas[4].toggleVisivel();
         if (fichas[4].getVisivel()) {
-            jLabel6.setIcon(fotoMila);
+            labelPersonagemCinco.setIcon(fotoMila);
 //            levantaServidor();
         } else {
-            jLabel6.setIcon(fotoEu);
+            labelPersonagemCinco.setIcon(fotoEu);
 //            abaixaServidor();
         }
     }
@@ -601,7 +589,6 @@ public class ServidorCC extends javax.swing.JFrame {
             System.err.println("Server: deu problema enquanto esperava a conexão");
             System.exit(1);
         }
-
     }
 
     private void handlerBtEnviar(java.awt.event.MouseEvent evt) {
@@ -613,8 +600,6 @@ public class ServidorCC extends javax.swing.JFrame {
             adicionaMensagemPropriaChat(mensagemAEnviar);
             jTextField1.setText("");
         }
-
-
     }
 
     private void handlerBtPalpite(java.awt.event.MouseEvent evt) {
@@ -645,7 +630,6 @@ public class ServidorCC extends javax.swing.JFrame {
         } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException ex) {
             java.util.logging.Logger.getLogger(ServidorCC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
         /*
          * Create and display the form
@@ -653,10 +637,6 @@ public class ServidorCC extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> {
             ServidorCC jogo = new ServidorCC();
             jogo.setVisible(true);
-
-
         });
     }
-
-
 }
