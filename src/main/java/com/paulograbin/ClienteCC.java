@@ -1,31 +1,28 @@
-
 package com.paulograbin;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.UnsupportedLookAndFeelException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static com.paulograbin.Assets.Codigos.CLIENT_WON;
+import static com.paulograbin.Assets.Codigos.CLIENT_CHAR_SELECTED;
+import static com.paulograbin.Assets.Codigos.SERVER_CHAR_SELECTED;
+import static com.paulograbin.Assets.Codigos.TERMINATE;
+import static com.paulograbin.Assets.Codigos.CLIENT_GUESS;
+import static com.paulograbin.Assets.Codigos.SERVER_GUESS;
+import static com.paulograbin.Assets.Codigos.RECEBEUMENSAGEMCHAT;
+import static com.paulograbin.Assets.Codigos.SERVER_WON;
+import static com.paulograbin.Assets.Codigos.SINCRONIZA;
 
 
 public class ClienteCC extends javax.swing.JFrame {
-
-    public final int ENCERRALAÇO = -1;
-    public final int DEFINEPERSONAGEMSERVER = 0;
-    public final int DEFINEPERSONAGEMCLIENT = 1;
-    public final int PALPITECLIENT = 2;
-    public final int RECEBEUMENSAGEMCHAT = 3;
-    //    public final int CLIENTBAIXOU = 4;
-//    public final int CLIENTLEVANTOU = 5;
-    public final int SINCRONIZA = 6;
-    //    public final int SERVERBAIXOU = 7;
-//    public final int SERVERLEVANTOU = 8;
-    public final int PALPITESERVIDOR = 9;
-    public final int SERVERVENCEU = 10;
-    public final int CLIENTVENCEU = 11;
-
 
     public final ImageIcon fotoEmma = new ImageIcon(Objects.requireNonNull(getClass().getResource(Assets.RESOURCE_EMMA_WATSON)));
     public final ImageIcon fotoObama = new javax.swing.ImageIcon(Objects.requireNonNull(getClass().getResource(Assets.RESOURCE_OBAMA)));
@@ -38,9 +35,10 @@ public class ClienteCC extends javax.swing.JFrame {
 
     // Variables declaration - do not modify
     private javax.swing.JButton buttonEnviar;
-//    private javax.swing.JButton jButton2;
+    //    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel labelPersonagemUm;
     private javax.swing.JLabel labelPersonagemDois;
@@ -51,33 +49,25 @@ public class ClienteCC extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextArea textAreaCampoMensagem;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration
 
-
-    public String nomeJogadorServer;
-    public String nomeJogadorClient;
 
     private final Personagem[] fichas = new Personagem[5];
 
     public String escolhidoServer;
     public String escolhidoClient;
 
-//    public int quantidadeServidor;
-//    public int quantidadeClient;
 
-    private final String ip;
-    private final int porta;
+//    private String ip;
+//    private int porta;
 
     private Socket socket;
     private ObjectInputStream input;
     private ObjectOutputStream output;
 
-    private boolean continua;
-
     public ClienteCC() {
-
         initComponents();
         iniciaPersonagens();
 
@@ -86,15 +76,14 @@ public class ClienteCC extends javax.swing.JFrame {
 
         //ip = "10.250.5.116";
 //        ip = JOptionPane.showInputDialog("Informe o IP...");
-        ip = "192.168.1.101";
-        porta = 1111;
 
-        jTextArea1.setText("Bem vindo...");
+        textAreaCampoMensagem.setText("Bem vindo..." + '\n');
 
 //        labelQntServidor.setText(String.valueOf(quantidadeServidor));
 //        labelQntClient.setText(String.valueOf(quantidadeClient));
 
         conecta();
+
         new Thread(() -> {
             while (true) {
                 if (input != null) {
@@ -121,14 +110,11 @@ public class ClienteCC extends javax.swing.JFrame {
         jLabel1.setText("Escolhido: " + escolhidoClient);
     }
 
-    public void fimDeJogo(String codigo) {
-
-        if (codigo.equals(String.valueOf(CLIENTVENCEU))) {
+    public void fimDeJogo(int codigo) {
+        if (codigo == CLIENT_WON) {
             JOptionPane.showMessageDialog(null, "CLIENT VENCEU");
-
-        } else if (codigo.equals(String.valueOf(SERVERVENCEU))) {
+        } else if (codigo == SERVER_WON) {
             JOptionPane.showMessageDialog(null, "SERVIDOR VENCEU");
-
         }
     }
 
@@ -136,27 +122,36 @@ public class ClienteCC extends javax.swing.JFrame {
         //ip = JOptionPane.showInputDialog("Informe o IP do servidor");
         //porta = Integer.parseInt(JOptionPane.showInputDialog("Insira a porta"));
 
+        var ip = "192.168.1.101";
+        var porta = 1111;
+
         try {
             socket = new Socket(ip, porta);
             output = new ObjectOutputStream(socket.getOutputStream());
             input = new ObjectInputStream(socket.getInputStream());
-
         } catch (IOException e) {
             System.err.println("Client: erro ao iniciar streams");
         }
 
         System.out.println("Client: conectado!");
-        mandaMensagem(montaMensagem(1, escolhidoClient));
+        mandaMensagem(1, escolhidoClient);
         System.out.println("Client: Enviou mensagem!");
     }
 
-    public void mandaMensagem(String m) {
+    public void mandaMensagem(int code, String m) {
+        System.out.println("Mensagem enviada: " + m);
+
+        Mensagem novaMensagem = new Mensagem(code, "Client", m);
+
+        if (code == RECEBEUMENSAGEMCHAT) {
+            textAreaCampoMensagem.append(novaMensagem.getSender() + ": " + novaMensagem.getTexto() + '\n');
+        }
+
         try {
-            System.out.println("Client: mensagem enviada: " + m);
-            output.writeObject(m);
+            output.writeObject(novaMensagem);
             output.flush();
-        } catch (IOException e) {
-            System.out.println("Client: mensagem NÃO enviada: " + m);
+        } catch (Exception ex) {
+            System.out.println("Client: não conseguiu enviar a mensagem: " + m);
         }
     }
 
@@ -164,99 +159,70 @@ public class ClienteCC extends javax.swing.JFrame {
         System.out.println("Recebendo mensagens...");
 
         try {
-            String mensagem = (String) input.readObject();
+            Mensagem mensagemRecebida = (Mensagem) input.readObject();
+            System.out.println("Mensagem recebida: " + mensagemRecebida);
 
-            System.out.println("MENSAGEM RECEBIDA: " + mensagem);
-
-            this.trataMensagemRecebida(mensagem);
-
-
+            this.trataMensagemRecebida(mensagemRecebida);
         } catch (IOException e) {
-            System.err.println("Server: IOException no recebimento de mensagem");
+            System.err.println("Server: IOException no recebimento de mensagem, " + e.getMessage());
         } catch (ClassNotFoundException ex) {
             System.err.println("Server: ClassNotFoundException no recebimento de mensagem");
         }
     }
 
-    public void trataMensagemRecebida(String mensagem) {
-        String[] buffer = mensagem.split(",");
+    public void trataMensagemRecebida(Mensagem novaMensagem) {
+        int messageCode = novaMensagem.getMessageCode();
+        String messageText = novaMensagem.getTexto();
+        String sender = novaMensagem.getSender();
 
-        if ((Integer.parseInt(buffer[0]) == ENCERRALAÇO)) {
+        if (messageCode == TERMINATE) {
             // Encerra laço
-            continua = false;
             System.out.println("Codigo -1 - Encerrando a porra toda.");
-        } else if ((Integer.parseInt(buffer[0]) == DEFINEPERSONAGEMSERVER)) {
-            escolhidoServer = buffer[1];
+        } else if (messageCode == SERVER_CHAR_SELECTED) {
+            escolhidoServer = messageText;
             System.out.println("Codigo 0 - Personagem do server: " + escolhidoServer);
 
-        } else if (Integer.parseInt(buffer[0]) == DEFINEPERSONAGEMCLIENT) {
+        } else if (messageCode == CLIENT_CHAR_SELECTED) {
             //Define personagem escolhido pelo client
-            escolhidoClient = buffer[1];
+            escolhidoClient = messageText;
             System.out.println("Codigo 1 - Personagem do client: " + escolhidoClient);
 
-        } else if (Integer.parseInt(buffer[0]) == PALPITECLIENT) {
+        } else if (messageCode == CLIENT_GUESS) {
             // Trata palpite recebido
-            System.out.println("Codigo 2 - Recebe palpite do client. Palpite: " + buffer[1]);
-            trataPalpiteRecebido(buffer[1]);
+            System.out.println("Codigo 2 - Recebe palpite do client. Palpite: " + messageText);
+            trataPalpiteRecebido(messageText);
 
-        } else if (Integer.parseInt(buffer[0]) == RECEBEUMENSAGEMCHAT) {
-            // Trata mensagem de chat recebida
-            System.out.println("Código 3 - recebeu mensagem chat");
-            adicionaMensagemClientChat();
+        } else if (messageCode == RECEBEUMENSAGEMCHAT) {
+            textAreaCampoMensagem.append(sender + ": " + messageText + "\n");
 
-        } else if (Integer.parseInt(buffer[0]) == SINCRONIZA) {
+        } else if (messageCode == SINCRONIZA) {
             // Trata sincroniza chat
-            sincronizaChat(buffer[1]);
+//            sincronizaChat(messageText);
             System.out.println("Codigo 6 - sincroniza chat");
 
-        } else if (Integer.parseInt(buffer[0]) == PALPITESERVIDOR) {
+        } else if (messageCode == SERVER_GUESS) {
             // Trata SERVER levantou personagem
-            trataPalpiteRecebido(buffer[1]);
+            trataPalpiteRecebido(messageText);
 
-        } else if (Integer.parseInt(buffer[0]) == SERVERVENCEU) {
+        } else if (messageCode == SERVER_WON) {
             // Trata SERVER levantou personagem
-            fimDeJogo(buffer[0]);
+            fimDeJogo(messageCode);
 
-        } else if (Integer.parseInt(buffer[0]) == CLIENTVENCEU) {
+        } else if (messageCode == CLIENT_WON) {
             // Trata SERVER levantou personagem
-            fimDeJogo(buffer[0]);
+            fimDeJogo(messageCode);
         }
     }
 
 
-    public void sincronizaChat(String mensagens) {
-        jTextArea1.setText(mensagens);
-    }
-
-    public void adicionaMensagemClientChat() {
-        String mensagem = "Client disse: " + jTextField1.getText();
-
-        String textoSalvo = jTextArea1.getText();
-
-        textoSalvo = textoSalvo + '\n' + mensagem;
-
-        jTextArea1.setText(textoSalvo);
-
-        mandaMensagem(montaMensagem(RECEBEUMENSAGEMCHAT, jTextField1.getText()));
-        jTextField1.setText("");
-
-        recebeMensagem();
-    }
-
     public void recebeEnviaPalpite() {
-        String palpite = JOptionPane.showInputDialog("Client, qual é o seu palpite?");
+        String names = Arrays.stream(fichas).map(Personagem::getNome).collect(Collectors.joining(","));
 
-        mandaMensagem(montaMensagem(PALPITECLIENT, palpite.toUpperCase().trim()));
+        String palpite = JOptionPane.showInputDialog("Client, qual é o seu palpite? " + names);
+
+        mandaMensagem(CLIENT_GUESS, palpite.toUpperCase().trim());
         System.out.println("************* ENVIOU AGORA ESPERA **********");
         recebeMensagem();
-    }
-
-    public String montaMensagem(int codigo, String mensagem) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(codigo).append(",").append(mensagem);
-
-        return sb.toString();
     }
 
     public void trataPalpiteRecebido(String palpite) {
@@ -299,13 +265,14 @@ public class ClienteCC extends javax.swing.JFrame {
         labelPersonagemCinco = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        textAreaCampoMensagem = new javax.swing.JTextArea();
         buttonEnviar = new javax.swing.JButton("Enviar");
         jTextField1 = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
 //        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -398,11 +365,12 @@ public class ClienteCC extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setEditable(false);
-        jTextArea1.setRows(3);
-        jScrollPane1.setViewportView(jTextArea1);
+        textAreaCampoMensagem.setColumns(20);
+        textAreaCampoMensagem.setEditable(false);
+        textAreaCampoMensagem.setRows(3);
+        jScrollPane1.setViewportView(textAreaCampoMensagem);
 
+        buttonEnviar.setToolTipText("Enviar...");
         buttonEnviar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 handlerBtEnviar(evt);
@@ -441,7 +409,7 @@ public class ClienteCC extends javax.swing.JFrame {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jButton3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jButton3.setFont(new java.awt.Font("Tahoma", 31, 11)); // NOI18N
         jButton3.setText("Palpite");
         jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -459,6 +427,8 @@ public class ClienteCC extends javax.swing.JFrame {
             }
         });
 
+        jButton5.setText("aaaaa");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -468,6 +438,7 @@ public class ClienteCC extends javax.swing.JFrame {
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(jPanel3Layout.createSequentialGroup()
                                                 .addComponent(jLabel1)
                                                 .addGap(0, 0, Short.MAX_VALUE)))
@@ -483,7 +454,8 @@ public class ClienteCC extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButton3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addContainerGap())
+                                .addContainerGap()
+                                .addComponent(jButton5))
         );
 
         jButton3.getAccessibleContext().setAccessibleName("btPalpite");
@@ -521,10 +493,8 @@ public class ClienteCC extends javax.swing.JFrame {
         fichas[0].toggleVisivel();
         if (fichas[0].getVisivel()) {
             labelPersonagemUm.setIcon(fotoEmma);
-//            levantaClient();
         } else {
             labelPersonagemUm.setIcon(fotoEu);
-//            abaixaClient();
         }
     }
 
@@ -532,10 +502,8 @@ public class ClienteCC extends javax.swing.JFrame {
         fichas[1].toggleVisivel();
         if (fichas[1].getVisivel()) {
             labelPersonagemDois.setIcon(fotoEmilia);
-//            levantaClient();
         } else {
             labelPersonagemDois.setIcon(fotoEu);
-//            abaixaClient();
         }
     }
 
@@ -543,10 +511,8 @@ public class ClienteCC extends javax.swing.JFrame {
         fichas[2].toggleVisivel();
         if (fichas[2].getVisivel()) {
             labelPersonagemTres.setIcon(fotoNatalie);
-//            levantaClient();
         } else {
             labelPersonagemTres.setIcon(fotoEu);
-//            abaixaClient();
         }
     }
 
@@ -554,10 +520,8 @@ public class ClienteCC extends javax.swing.JFrame {
         fichas[3].toggleVisivel();
         if (fichas[3].getVisivel()) {
             labelPersonagemQuatro.setIcon(fotoScarlett);
-//            levantaClient();
         } else {
             labelPersonagemQuatro.setIcon(fotoEu);
-//            abaixaClient();
         }
     }
 
@@ -565,10 +529,8 @@ public class ClienteCC extends javax.swing.JFrame {
         fichas[4].toggleVisivel();
         if (fichas[4].getVisivel()) {
             labelPersonagemCinco.setIcon(fotoMila);
-//            levantaClient();
         } else {
             labelPersonagemCinco.setIcon(fotoEu);
-//            abaixaClient();
         }
     }
 
@@ -577,7 +539,15 @@ public class ClienteCC extends javax.swing.JFrame {
     }
 
     private void handlerBtEnviar(java.awt.event.MouseEvent evt) {
-        adicionaMensagemClientChat();
+        System.out.println("Handle botão enviar....");
+        String mensagemAEnviar = jTextField1.getText();
+
+        if (mensagemAEnviar.trim().equalsIgnoreCase("")) {
+            System.out.println("Mensagem vazia, nada a enviar...");
+        } else {
+            mandaMensagem(RECEBEUMENSAGEMCHAT, mensagemAEnviar);
+            jTextField1.setText("");
+        }
     }
 
     private void handlerBtPalpite(java.awt.event.MouseEvent evt) {
@@ -585,8 +555,7 @@ public class ClienteCC extends javax.swing.JFrame {
     }
 
     private void btTerminaJogada(java.awt.event.MouseEvent evt) {
-        mandaMensagem(montaMensagem(ENCERRALAÇO, null));
-        continua = true;
+        mandaMensagem(TERMINATE, null);
     }
 
     public static void main(String[] args) {
@@ -606,7 +575,8 @@ public class ClienteCC extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException ex) {
+        } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException |
+                 InstantiationException ex) {
             java.util.logging.Logger.getLogger(ClienteCC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 

@@ -1,34 +1,32 @@
-
 package com.paulograbin;
 
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.UnsupportedLookAndFeelException;
+import java.awt.Color;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Objects;
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import javax.swing.UnsupportedLookAndFeelException;
+import java.util.stream.Collectors;
+
+import static com.paulograbin.Assets.Codigos.CLIENT_WON;
+import static com.paulograbin.Assets.Codigos.CLIENT_CHAR_SELECTED;
+import static com.paulograbin.Assets.Codigos.SERVER_CHAR_SELECTED;
+import static com.paulograbin.Assets.Codigos.TERMINATE;
+import static com.paulograbin.Assets.Codigos.CLIENT_GUESS;
+import static com.paulograbin.Assets.Codigos.SERVER_GUESS;
+import static com.paulograbin.Assets.Codigos.RECEBEUMENSAGEMCHAT;
+import static com.paulograbin.Assets.Codigos.SERVER_WON;
+import static com.paulograbin.Assets.Codigos.SINCRONIZA;
 
 
 public class ServidorCC extends javax.swing.JFrame {
-
-    public final int ENCERRALAÇO = -1;
-    public final int DEFINEPERSONAGEMSERVER = 0;
-    public final int DEFINEPERSONAGEMCLIENT = 1;
-    public final int PALPITECLIENT = 2;
-    public final int RECEBEUMENSAGEMCHAT = 3;
-    //    public final int CLIENTBAIXOU = 4;
-//    public final int CLIENTLEVANTOU = 5;
-    public final int SINCRONIZA = 6;
-    //    public final int SERVERBAIXOU = 7;
-//    public final int SERVERLEVANTOU = 8;
-    public final int PALPITESERVIDOR = 9;
-    public final int SERVERVENCEU = 10;
-    public final int CLIENTVENCEU = 11;
-
 
     public final ImageIcon fotoEmma = new ImageIcon(Objects.requireNonNull(getClass().getResource(Assets.RESOURCE_EMMA_WATSON)));
     public final ImageIcon fotoObama = new javax.swing.ImageIcon(Objects.requireNonNull(getClass().getResource(Assets.RESOURCE_OBAMA)));
@@ -38,28 +36,26 @@ public class ServidorCC extends javax.swing.JFrame {
     public final ImageIcon fotoScarlett = new ImageIcon(Objects.requireNonNull(getClass().getResource(Assets.RESOURCE_SCARLETT)));
     public final ImageIcon fotoEu = new ImageIcon(Objects.requireNonNull(getClass().getResource(Assets.RESOURCE_EU)));
 
-    // Variables declaration - do not modify
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton buttonDoesNothing;
+    private javax.swing.JButton buttonPalpite;
+    private javax.swing.JButton buttonFinalizouJogada;
+    private javax.swing.JButton buttonAlsoNothing;
+
+    private javax.swing.JLabel labelPersonalEscolhido;
     private javax.swing.JLabel labelPersonagemUm;
     private javax.swing.JLabel labelPersonagemDois;
     private javax.swing.JLabel labelPersonagemTres;
     private javax.swing.JLabel labelPersonagemQuatro;
     private javax.swing.JLabel labelPersonagemCinco;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
+
+    private javax.swing.JPanel panelCards;
+    private javax.swing.JPanel panelChat;
+    private javax.swing.JPanel panelButtons;
+    private javax.swing.JTextArea textAreaCampoMensagem;
+
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JButton buttonEnviarMensagem;
     private javax.swing.JTextField jTextField1;
-    // End of variables declaration
-
-
-    public String nomeJogadorServer;
-    public String nomeJogadorClient;
 
     private final Personagem[] fichas = new Personagem[5];
 
@@ -73,18 +69,14 @@ public class ServidorCC extends javax.swing.JFrame {
     private ObjectInputStream input;
     private ObjectOutputStream output;
 
-    private boolean continua;
-    private final boolean debugMode = false;
-
     public ServidorCC() {
         try {
             initComponents();
             iniciaPersonagens();
 
-            continua = true;
             porta = 1111;
 
-            jTextArea1.setText("Bem vindo...");
+            textAreaCampoMensagem.setText("Bem vindo..." + '\n');
 
             socketRecepcao = new ServerSocket(porta);
 
@@ -118,7 +110,7 @@ public class ServidorCC extends javax.swing.JFrame {
         int numero = (int) (Math.random() * 5);
         escolhidoServer = fichas[numero].getNome();
 
-        jLabel1.setText("Escolhido: " + escolhidoServer);
+        labelPersonalEscolhido.setText("Escolhido: " + escolhidoServer);
     }
 
     public void esperaConexao() throws IOException {
@@ -128,7 +120,7 @@ public class ServidorCC extends javax.swing.JFrame {
         String[] s = localMachineIP.split("/");
         localMachineIP = s[1];
 
-        adicionaMensagemConsole("Esperando conexão no endereço " + localMachineIP + " porta " + porta);
+        System.out.println("Esperando conexão no endereço " + localMachineIP + " porta " + porta);
 
 //        JOptionPane.showMessageDialog(null, "Esperando conexão no IP " + localMachineIP);
 
@@ -138,123 +130,87 @@ public class ServidorCC extends javax.swing.JFrame {
         input = new ObjectInputStream(socket.getInputStream());
         output = new ObjectOutputStream(socket.getOutputStream());
 
-        mandaMensagem(montaMensagem(DEFINEPERSONAGEMSERVER, escolhidoServer));
+        mandaMensagem(SERVER_CHAR_SELECTED, escolhidoServer);
     }
 
-    public void mandaMensagem(String m) {
-        adicionaMensagemConsole("Mensagem enviada: " + m);
+    public void mandaMensagem(int code, String m) {
+        System.out.println("Mensagem enviada: " + m);
+
+        Mensagem novaMensagem = new Mensagem(code, "Servidor", m);
+
+        if (code == RECEBEUMENSAGEMCHAT) {
+            textAreaCampoMensagem.append(novaMensagem.getSender() + ": " + novaMensagem.getTexto() + '\n');
+        }
 
         try {
-            output.writeObject(m);
+            output.writeObject(novaMensagem);
             output.flush();
         } catch (Exception ex) {
-            adicionaMensagemConsole("Server: não conseguiu enviar a mensagem: " + m);
+            System.out.println("Server: não conseguiu enviar a mensagem: " + m);
         }
     }
 
     public void recebeMensagem() {
         try {
-            String mensagem = (String) input.readObject();
+            Mensagem mensagem = (Mensagem) input.readObject();
 
-            adicionaMensagemConsole("MENSAGEM RECEBIDA: " + mensagem);
+            System.out.println("MENSAGEM RECEBIDA: " + mensagem);
 
-            this.trataMensagemRecebida(mensagem);
+            trataMensagemRecebida(mensagem);
         } catch (IOException e) {
-            System.err.println("Server: IOException no recebimento de mensagem");
+            System.err.println("Server: IOException no recebimento de mensagem:" + e.getMessage());
         } catch (ClassNotFoundException ex) {
             System.err.println("Server: ClassNotFoundException no recebimento de mensagem");
         }
     }
 
-    public void trataMensagemRecebida(String mensagem) {
-        String[] buffer = mensagem.split(",");
+    private void trataMensagemRecebida(Mensagem mensagem) {
+        System.out.println("Tratando nova mensagem...");
 
-        if ((Integer.parseInt(buffer[0]) == ENCERRALAÇO)) {
-            // Encerra laço
-            continua = false;
-            adicionaMensagemConsole("Codigo -1 - Encerrando a porra toda.");
+        int messageCode = mensagem.getMessageCode();
+        String messageText = mensagem.getTexto();
+        String sender = mensagem.getSender();
 
-        } else if (Integer.parseInt(buffer[0]) == DEFINEPERSONAGEMCLIENT) {
-            //Define personagem escolhido pelo client
-            escolhidoClient = buffer[1];
-            adicionaMensagemConsole("Codigo 1 - Personagem do client: " + escolhidoClient);
+        if (messageCode == TERMINATE) {
+            System.out.println("Codigo -1 - Encerrando a porra toda.");
+        } else if (messageCode == CLIENT_CHAR_SELECTED) {
+            escolhidoClient = messageText;
+            System.out.println("Codigo 1 - Personagem do client: " + escolhidoClient);
 
-        } else if (Integer.parseInt(buffer[0]) == PALPITECLIENT) {
-            // Trata palpite recebido
-            adicionaMensagemConsole("Codigo 2 - Recebe palpite do client. Palpite: " + buffer[1]);
-            trataPalpiteRecebido(buffer[1]);
+        } else if (messageCode == CLIENT_GUESS) {
+            System.out.println("Codigo 2 - Recebe palpite do client. Palpite: " + messageText);
+            trataPalpiteRecebido(messageText);
 
-        } else if (Integer.parseInt(buffer[0]) == RECEBEUMENSAGEMCHAT) {
-            // Trata mensagem de chat recebida
-            adicionaMensagemConsole("Código 3 - recebeu mensagem chat");
-            adicionaMensagemClientChat(buffer[1]);
-        } else if (Integer.parseInt(buffer[0]) == SINCRONIZA) {
-            // Trata sincroniza chat
-            adicionaMensagemConsole("Codigo 6 - sincroniza chat");
-        } else if (Integer.parseInt(buffer[0]) == PALPITESERVIDOR) {
+        } else if (messageCode == RECEBEUMENSAGEMCHAT) {
+            System.out.println("Código 3 - recebeu mensagem chat");
+            textAreaCampoMensagem.append(sender + ": " + messageText + "\n");
+        } else if (messageCode == SINCRONIZA) {
+            System.out.println("Codigo 6 - sincroniza chat");
+        } else if (messageCode == SERVER_GUESS) {
             // Trata SERVER levantou personagem
         }
     }
 
-    public void sincronizaChat() {
-        mandaMensagem(montaMensagem(SINCRONIZA, jTextArea1.getText()));
-    }
-
-
-    public void adicionaMensagemPropriaChat(String mensagem) {
-        String textoSalvo = jTextArea1.getText();
-        textoSalvo = textoSalvo + '\n' + "Servidor disse: " + mensagem;
-
-        jTextArea1.setText(textoSalvo);
-
-        sincronizaChat();
-    }
-
-    public void adicionaMensagemClientChat(String mensagem) {
-        String textoSalvo = jTextArea1.getText();
-        textoSalvo = textoSalvo + '\n' + "Client disse: " + mensagem;
-
-        jTextArea1.setText(textoSalvo);
-
-        sincronizaChat();
-    }
-
-    public void adicionaMensagemConsole(String mensagem) {
-        if (debugMode) {
-            String textoSalvo = jTextArea1.getText();
-            textoSalvo = textoSalvo + '\n' + "CONSOLE: " + mensagem;
-
-            jTextArea1.setText(textoSalvo);
-        }
-    }
-
     public void recebeEnviaPalpite() {
-        String palpite = JOptionPane.showInputDialog("Servidor, qual é o seu palpite?");
+        String names = Arrays.stream(fichas).map(Personagem::getNome).collect(Collectors.joining(","));
 
-        mandaMensagem(montaMensagem(PALPITESERVIDOR, palpite.toUpperCase().trim()));
+        String palpite = JOptionPane.showInputDialog("Servidor, qual é o seu palpite? " + names);
 
-    }
-
-    public String montaMensagem(int codigo, String mensagem) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(codigo).append(",").append(mensagem);
-
-        return sb.toString();
+        mandaMensagem(SERVER_GUESS, palpite.toUpperCase());
     }
 
     public void trataPalpiteRecebido(String palpite) {
-        adicionaMensagemConsole("Iniciando tratamento do palpite recebido do client");
+        System.out.println("Iniciando tratamento do palpite recebido do client");
 
-        adicionaMensagemConsole("Palpite recebido: " + palpite);
-        adicionaMensagemConsole("Personagem do server: " + escolhidoServer);
+        System.out.println("Palpite recebido: " + palpite);
+        System.out.println("Personagem do server: " + escolhidoServer);
 
         if (palpite.trim().equalsIgnoreCase(escolhidoServer.trim())) {
             JOptionPane.showMessageDialog(null, "CLIENT VENCEU, ADVINHOU CORRETAMENTE");
-            mandaMensagem(montaMensagem(CLIENTVENCEU, null));
+            mandaMensagem(CLIENT_WON, null);
         } else {
             JOptionPane.showMessageDialog(null, "SERVIDOR VENCEU, CLIENT ERROU PALPITE");
-            mandaMensagem(montaMensagem(SERVERVENCEU, null));
+            mandaMensagem(SERVER_WON, null);
         }
     }
 
@@ -270,10 +226,10 @@ public class ServidorCC extends javax.swing.JFrame {
         } catch (IOException ex) {
             System.err.println("Could not close connection");
             System.exit(1);
-        } finally {
-            System.out.println("Done closing connection.");
-            System.exit(0);
         }
+
+        System.out.println("Done closing connection.");
+        System.exit(0);
     }
 
     /**
@@ -283,29 +239,35 @@ public class ServidorCC extends javax.swing.JFrame {
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
-        jPanel1 = new javax.swing.JPanel();
+        panelCards = new javax.swing.JPanel();
+        panelChat = new javax.swing.JPanel();
+        panelButtons = new javax.swing.JPanel();
+
         labelPersonagemUm = new javax.swing.JLabel();
         labelPersonagemDois = new javax.swing.JLabel();
         labelPersonagemTres = new javax.swing.JLabel();
         labelPersonagemQuatro = new javax.swing.JLabel();
         labelPersonagemCinco = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
+
+
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jButton1 = new javax.swing.JButton();
+        textAreaCampoMensagem = new javax.swing.JTextArea();
+
+        buttonEnviarMensagem = new javax.swing.JButton("Enviar");
         jTextField1 = new javax.swing.JTextField();
-        jPanel3 = new javax.swing.JPanel();
-        jButton3 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        buttonPalpite = new javax.swing.JButton();
+        labelPersonalEscolhido = new javax.swing.JLabel();
+
+        buttonFinalizouJogada = new javax.swing.JButton();
+
+        buttonDoesNothing = new javax.swing.JButton("aaaaaaaaaaaaaaaaaaaa");
+        buttonAlsoNothing = new javax.swing.JButton("bbbbbbbbb");
+
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Servidor");
-        setResizable(true);
-        setPreferredSize(new java.awt.Dimension(1000, 600));
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
-
             @Override
             public void windowClosing(WindowEvent e) {
                 System.out.println(e);
@@ -314,7 +276,9 @@ public class ServidorCC extends javax.swing.JFrame {
             }
         });
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        panelCards.setBorder(javax.swing.BorderFactory.createEtchedBorder(Color.BLUE, Color.BLACK));
+        panelChat.setBorder(javax.swing.BorderFactory.createEtchedBorder(Color.RED, Color.BLACK));
+        panelButtons.setBorder(javax.swing.BorderFactory.createEtchedBorder(Color.GREEN, Color.BLACK));
 
         labelPersonagemUm.setBackground(new java.awt.Color(153, 153, 153));
         labelPersonagemUm.setToolTipText("Emma Watson");
@@ -364,8 +328,44 @@ public class ServidorCC extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
+
+        textAreaCampoMensagem.setEditable(false);
+        textAreaCampoMensagem.setColumns(20);
+        textAreaCampoMensagem.setRows(3);
+        jScrollPane1.setViewportView(textAreaCampoMensagem);
+
+        buttonEnviarMensagem.setText("Enviar");
+        buttonEnviarMensagem.setToolTipText("Enviar");
+        buttonEnviarMensagem.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                handlerBtEnviar(evt);
+            }
+        });
+
+        jTextField1.setToolTipText("Digite aqui sua mensagem...");
+
+
+        buttonPalpite.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        buttonPalpite.setText("Palpite");
+        buttonPalpite.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                handlerBtPalpite(evt);
+            }
+        });
+
+        labelPersonalEscolhido.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        labelPersonalEscolhido.setText("jLabel1");
+
+        buttonFinalizouJogada.setText("Finalizou jogada");
+        buttonFinalizouJogada.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                limpa(evt);
+            }
+        });
+
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(panelCards);
+        panelCards.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
@@ -393,24 +393,8 @@ public class ServidorCC extends javax.swing.JFrame {
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        jTextArea1.setEditable(false);
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(3);
-        jScrollPane1.setViewportView(jTextArea1);
-
-        jButton1.setText("Enviar");
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                handlerBtEnviar(evt);
-            }
-        });
-
-        jTextField1.setToolTipText("Digite aqui sua mensagem...");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(panelChat);
+        panelChat.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
                 jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
@@ -422,7 +406,7 @@ public class ServidorCC extends javax.swing.JFrame {
                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                                                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 605, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(buttonEnviarMensagem, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(12, 12, 12))))
         );
         jPanel2Layout.setVerticalGroup(
@@ -432,59 +416,43 @@ public class ServidorCC extends javax.swing.JFrame {
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(buttonEnviarMensagem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap())
         );
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jButton3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jButton3.setText("Palpite");
-        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                handlerBtPalpite(evt);
-            }
-        });
-
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel1.setText("jLabel1");
-
-        jButton4.setText("Finalizou jogada");
-        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                limpa(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(panelButtons);
+        panelButtons.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
                 jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(buttonPalpite, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(buttonDoesNothing, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(jPanel3Layout.createSequentialGroup()
-                                                .addComponent(jLabel1)
+                                                .addComponent(labelPersonalEscolhido)
                                                 .addGap(0, 0, Short.MAX_VALUE))
-                                        .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        )
+                                        .addComponent(buttonFinalizouJogada, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(buttonAlsoNothing, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                )
                                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
                 jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(jLabel1)
+                                .addComponent(labelPersonalEscolhido)
                                 .addGap(18, 18, 18)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton4)
+                                .addComponent(buttonFinalizouJogada)
                                 .addGap(5, 5, 5)
-                                .addComponent(jButton3)
+                                .addComponent(buttonAlsoNothing)
+                                .addGap(5, 5, 5)
+                                .addComponent(buttonPalpite)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2)
+                                .addComponent(buttonDoesNothing)
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -495,22 +463,22 @@ public class ServidorCC extends javax.swing.JFrame {
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(panelCards, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(panelChat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                                .addComponent(panelButtons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(panelCards, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jPanel2, 0, 0, Short.MAX_VALUE)
-                                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addComponent(panelChat, 0, 0, Short.MAX_VALUE)
+                                        .addComponent(panelButtons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -521,10 +489,8 @@ public class ServidorCC extends javax.swing.JFrame {
         fichas[0].toggleVisivel();
         if (fichas[0].getVisivel()) {
             labelPersonagemUm.setIcon(fotoEmma);
-//            levantaServidor();
         } else {
             labelPersonagemUm.setIcon(fotoEu);
-//            abaixaServidor();
         }
     }
 
@@ -532,10 +498,8 @@ public class ServidorCC extends javax.swing.JFrame {
         fichas[1].toggleVisivel();
         if (fichas[1].getVisivel()) {
             labelPersonagemDois.setIcon(fotoEmilia);
-//           levantaServidor();
         } else {
             labelPersonagemDois.setIcon(fotoEu);
-//            abaixaServidor();
         }
     }
 
@@ -543,10 +507,8 @@ public class ServidorCC extends javax.swing.JFrame {
         fichas[2].toggleVisivel();
         if (fichas[2].getVisivel()) {
             labelPersonagemTres.setIcon(fotoNatalie);
-//            levantaServidor();
         } else {
             labelPersonagemTres.setIcon(fotoEu);
-//            abaixaServidor();
         }
     }
 
@@ -554,10 +516,8 @@ public class ServidorCC extends javax.swing.JFrame {
         fichas[3].toggleVisivel();
         if (fichas[3].getVisivel()) {
             labelPersonagemQuatro.setIcon(fotoScarlett);
-//            levantaServidor();
         } else {
             labelPersonagemQuatro.setIcon(fotoEu);
-//            abaixaServidor();
         }
     }
 
@@ -565,10 +525,8 @@ public class ServidorCC extends javax.swing.JFrame {
         fichas[4].toggleVisivel();
         if (fichas[4].getVisivel()) {
             labelPersonagemCinco.setIcon(fotoMila);
-//            levantaServidor();
         } else {
             labelPersonagemCinco.setIcon(fotoEu);
-//            abaixaServidor();
         }
     }
 
@@ -590,12 +548,13 @@ public class ServidorCC extends javax.swing.JFrame {
     }
 
     private void handlerBtEnviar(java.awt.event.MouseEvent evt) {
+        System.out.println("Handle botão enviar....");
         String mensagemAEnviar = jTextField1.getText();
 
         if (mensagemAEnviar.trim().equalsIgnoreCase("")) {
-            // Campo vaziu, não manda nada
+            System.out.println("Mensagem vazia, nada a enviar...");
         } else {
-            adicionaMensagemPropriaChat(mensagemAEnviar);
+            mandaMensagem(RECEBEUMENSAGEMCHAT, mensagemAEnviar);
             jTextField1.setText("");
         }
     }
@@ -605,7 +564,7 @@ public class ServidorCC extends javax.swing.JFrame {
     }
 
     private void limpa(java.awt.event.MouseEvent evt) {
-        mandaMensagem(montaMensagem(ENCERRALAÇO, null));
+        mandaMensagem(TERMINATE, null);
     }
 
     public static void main(String[] args) {
@@ -625,13 +584,11 @@ public class ServidorCC extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException ex) {
+        } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException |
+                 InstantiationException ex) {
             java.util.logging.Logger.getLogger(ServidorCC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        /*
-         * Create and display the form
-         */
         java.awt.EventQueue.invokeLater(() -> {
             ServidorCC jogo = new ServidorCC();
             jogo.setVisible(true);
