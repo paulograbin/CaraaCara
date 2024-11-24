@@ -82,7 +82,6 @@ public class ServidorCC extends javax.swing.JFrame {
             iniciaPersonagens();
 
             continua = true;
-
             porta = 1111;
 
             jTextArea1.setText("Bem vindo...");
@@ -91,7 +90,6 @@ public class ServidorCC extends javax.swing.JFrame {
 
             esperaConexao();
 
-
             new Thread(() -> {
                 while (true) {
                     if (input != null) {
@@ -99,7 +97,6 @@ public class ServidorCC extends javax.swing.JFrame {
                     }
                 }
             }).start();
-
         } catch (IOException ex) {
             System.err.println("Server: merda no construtor 2");
             System.exit(1);
@@ -127,14 +124,16 @@ public class ServidorCC extends javax.swing.JFrame {
     public void esperaConexao() throws IOException {
         System.out.println("Esperando conexão...");
 
+        String localMachineIP = String.valueOf(InetAddress.getLocalHost());
+        String[] s = localMachineIP.split("/");
+        localMachineIP = s[1];
 
-        JOptionPane.showMessageDialog(null, "Esperando conexão no IP " + ip);
+        adicionaMensagemConsole("Esperando conexão no endereço " + localMachineIP + " porta " + porta);
 
+//        JOptionPane.showMessageDialog(null, "Esperando conexão no IP " + localMachineIP);
 
         socket = socketRecepcao.accept();
-        adicionaMensagemConsole("Server: conexão bem sucedida");
-
-        btAbrir.setText("Conectado!");
+        System.out.println("Server-client connection established!");
 
         input = new ObjectInputStream(socket.getInputStream());
         output = new ObjectOutputStream(socket.getOutputStream());
@@ -257,33 +256,25 @@ public class ServidorCC extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "SERVIDOR VENCEU, CLIENT ERROU PALPITE");
             mandaMensagem(montaMensagem(SERVERVENCEU, null));
         }
-
     }
 
-    public void fechaConexao() {
-        adicionaMensagemConsole("Fechando conexões...");
+    public void shutdownGracefully() {
+        System.out.println("Closing connection...");
+
         try {
-            socket.close();
+            if (Objects.nonNull(socket) && socket.isClosed()) {
+                socket.close();
+            } else {
+                System.out.println("Connection not established, do not need to close it");
+            }
         } catch (IOException ex) {
-            System.err.println("Server: problema enquanto tentava fechar a conexão.");
+            System.err.println("Could not close connection");
             System.exit(1);
+        } finally {
+            System.out.println("Done closing connection.");
+            System.exit(0);
         }
     }
-
-//    public void exibe() {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append(nomeJogadorServer).append('\n');
-//        sb.append(nomeJogadorClient).append('\n');
-//
-//        sb.append(ip).append('\n');
-//        sb.append(porta).append('\n');
-//
-//        sb.append(quantidadeServidor).append('\n');
-//        sb.append(quantidadeClient).append('\n');
-//
-//        JOptionPane.showMessageDialog(null, sb);
-//    }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -311,10 +302,15 @@ public class ServidorCC extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Servidor");
-        setResizable(false);
+        setResizable(true);
+        setPreferredSize(new java.awt.Dimension(1000, 600));
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                handlerClose(evt);
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.out.println(e);
+
+                handlerButtonClose(e);
             }
         });
 
@@ -576,8 +572,10 @@ public class ServidorCC extends javax.swing.JFrame {
         }
     }
 
-    private void handlerClose(java.awt.event.WindowEvent evt) {
-        fechaConexao();
+    private void handlerButtonClose(java.awt.event.WindowEvent evt) {
+        System.out.println("Handling button close");
+
+        shutdownGracefully();
     }
 
     private void handlerBtAbrirConexao(java.awt.event.MouseEvent evt) {
