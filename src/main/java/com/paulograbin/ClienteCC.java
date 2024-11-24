@@ -539,10 +539,6 @@ public class ClienteCC extends javax.swing.JFrame {
         }
     }
 
-    private void trocaFotoNatalie(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trocaFotoNatalie
-        fichas[2].setEstado();
-        if (fichas[2].getEstado()) {
-            jLabel4.setIcon(fotoNatalie);
     private void trocaFotoNatalie(java.awt.event.MouseEvent evt) {
         fichas[2].toggleVisivel();
         if (fichas[2].getVisivel()) {
@@ -554,10 +550,6 @@ public class ClienteCC extends javax.swing.JFrame {
         }
     }
 
-    private void trocaFotoScarlett(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trocaFotoScarlett
-        fichas[3].setEstado();
-        if (fichas[3].getEstado()) {
-            jLabel5.setIcon(fotoScarlett);
     private void trocaFotoScarlett(java.awt.event.MouseEvent evt) {
         fichas[3].toggleVisivel();
         if (fichas[3].getVisivel()) {
