@@ -1,5 +1,7 @@
 package com.paulograbin;
 
+import com.formdev.flatlaf.FlatLightLaf;
+
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -256,6 +258,7 @@ public class ClienteCC extends javax.swing.JFrame {
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
+        FlatLightLaf.setup();
 
         jPanel1 = new javax.swing.JPanel();
         labelPersonagemUm = new javax.swing.JLabel();
@@ -556,33 +559,5 @@ public class ClienteCC extends javax.swing.JFrame {
 
     private void btTerminaJogada(java.awt.event.MouseEvent evt) {
         mandaMensagem(TERMINATE, null);
-    }
-
-    public static void main(String[] args) {
-        /*
-         * Set the Nimbus look and feel
-         */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /*
-         * If Nimbus (introduced in Java SE 6) is not available, stay with the
-         * default look and feel. For details see
-         * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException |
-                 InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ClienteCC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        /*
-         * Create and display the form
-         */
-        java.awt.EventQueue.invokeLater(() -> new ClienteCC().setVisible(true));
     }
 }

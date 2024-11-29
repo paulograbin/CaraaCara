@@ -1,7 +1,9 @@
 package com.paulograbin;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.Color;
 import java.awt.event.WindowEvent;
@@ -239,6 +241,8 @@ public class ServidorCC extends javax.swing.JFrame {
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
+        FlatLightLaf.setup();
+
         panelCards = new javax.swing.JPanel();
         panelChat = new javax.swing.JPanel();
         panelButtons = new javax.swing.JPanel();
@@ -565,33 +569,5 @@ public class ServidorCC extends javax.swing.JFrame {
 
     private void limpa(java.awt.event.MouseEvent evt) {
         mandaMensagem(TERMINATE, null);
-    }
-
-    public static void main(String[] args) {
-        /*
-         * Set the Nimbus look and feel
-         */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /*
-         * If Nimbus (introduced in Java SE 6) is not available, stay with the
-         * default look and feel. For details see
-         * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException |
-                 InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ServidorCC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        java.awt.EventQueue.invokeLater(() -> {
-            ServidorCC jogo = new ServidorCC();
-            jogo.setVisible(true);
-        });
     }
 }
