@@ -34,13 +34,12 @@ public class Initial extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Initial.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        if (args[0].equalsIgnoreCase("client")) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("client")) {
             java.awt.EventQueue.invokeLater(() -> new ClienteCC().setVisible(true));
         } else {
             java.awt.EventQueue.invokeLater(() -> new ServidorCC().setVisible(true));
         }
     }
-
 
     /**
      * This method is called from within the constructor to
