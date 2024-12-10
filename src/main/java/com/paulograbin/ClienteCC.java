@@ -124,7 +124,7 @@ public class ClienteCC extends javax.swing.JFrame {
         //ip = JOptionPane.showInputDialog("Informe o IP do servidor");
         //porta = Integer.parseInt(JOptionPane.showInputDialog("Insira a porta"));
 
-        var ip = "192.168.1.101";
+        var ip = "127.0.0.1";
         var porta = 1111;
 
         try {
@@ -132,7 +132,7 @@ public class ClienteCC extends javax.swing.JFrame {
             output = new ObjectOutputStream(socket.getOutputStream());
             input = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
-            System.err.println("Client: erro ao iniciar streams");
+            System.err.println("Client: erro ao iniciar streams:" + e.getMessage());
         }
 
         System.out.println("Client: conectado!");
