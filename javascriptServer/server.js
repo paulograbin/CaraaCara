@@ -1,11 +1,24 @@
-import { Server } from 'socket.io';
+const net = require('net');
 
+// Connect to the TCP server
+const client = net.createConnection({port: 1111, host: '127.0.0.1'}, () => {
+    console.log('Connected to the server');
 
+    // Send a message to the server
+    client.write('Hello, server!');
+});
 
-const io = new Server(server);
+// Listen for data from the server
+client.on('data', (data) => {
+    console.log('Received from server:', data.toString());
+});
 
-io.on('connection', (socket) => {
+// Handle connection close
+client.on('end', () => {
+    console.log('Disconnected from the server');
+});
 
-	console.log("aeaeae");
-
+// Handle errors
+client.on('error', (err) => {
+    console.error('Client error:', err);
 });

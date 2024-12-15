@@ -1,0 +1,54 @@
+<html>
+<head>
+    <title>Socket.IO Client</title>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"
+            integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+
+<script>
+
+    const socket = io("http://localhost:1111");
+
+    socket.on("reconnect_attempt", () => {
+        console.log("reconnect_attempt");
+    });
+
+    socket.on("reconnect", () => {
+        console.log("reconnect");
+    });
+
+    socket.on("connection", (socket) => {
+        console.log("connection");
+    });
+
+    socket.on("connect", () => {
+        const engine = socket.io.engine;
+        console.log(engine.transport.name); // in most cases, prints "polling"
+
+        engine.once("upgrade", () => {
+            // called when the transport is upgraded (i.e. from HTTP long-polling to WebSocket)
+            console.log(engine.transport.name); // in most cases, prints "websocket"
+        });
+
+        engine.on("packet", ({type, data}) => {
+            // called for each packet received
+        });
+
+        engine.on("packetCreate", ({type, data}) => {
+            // called for each packet sent
+        });
+
+        engine.on("drain", () => {
+            // called when the write buffer is drained
+        });
+
+        engine.on("close", (reason) => {
+            // called when the underlying connection is closed
+        });
+    });
+
+</script>
+</body>
+</html>
